@@ -111,3 +111,22 @@ qplot(rolls_weighted, binwidth = 1)
 ```
 
 ## Playing Cards
+
+First, create a deck of cards
+
+```{r, echo = FALSE}
+hand <- c("ace", "king", "queen", "jack", "ten")
+typeof(hand)
+attributes(hand)
+names(die) <- c("one", "two", "three", "four", "five", "six")
+attributes(die)
+royal_cards <- c("ace", "king", "queen", "jack", "ten")
+spades <- replicate(5, "spades")
+royal_flush <- c(royal_cards, spades)
+royal_flush <- matrix(royal_flush)
+dim(royal_flush) <- c(5,2)
+card_type <- factor(c("face", "number", "ace"))
+card <- c("ace", "hearts", 1)
+typeof(card)
+```
+
