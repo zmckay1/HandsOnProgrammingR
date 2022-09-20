@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
+library(readr)
+library(tidyverse)
 ```
 
 ## R Interface
@@ -126,7 +128,91 @@ royal_flush <- c(royal_cards, spades)
 royal_flush <- matrix(royal_flush)
 dim(royal_flush) <- c(5,2)
 card_type <- factor(c("face", "number", "ace"))
-card <- c("ace", "hearts", 1)
+card <- list("ace", "hearts", 1)
 typeof(card)
+deck <- data.frame(face = c("ace", "two", "six"),
+                   suit = c("clubs", "clubs", "clubs"),
+                   value = c(1, 2, 3))
+face = c("two", "three", "four", "five", "six", "seven",
+         "eight", "nine", "ten", "jack", "queen", "king",
+         "ace")
+
+face_deck = replicate(4, face)
+suit_deck = c(replicate(13, "clubs"), replicate(13,"hearts"),
+              replicate(13, "spades"), replicate(13,
+                                                 "diamonds"))
+value_deck = replicate(4, c(2:13, 11))
+dim(value_deck) <- c(52, 1)
+
+deck <- data.frame(face = face_deck, suit = suit_deck,
+                   value = value_deck)
+
+str(deck)
+deck
+
+```
+
+Alternatively, import deck from a .csv file and save it as a new .csv file.
+
+```{r}
+deck <- read_csv("deck.csv")
+View(deck)
+head(deck)
+tail(deck)
+write.csv(deck, file = "cards.csv", row.names = FALSE)
+cards <- read_csv("cards.csv")
+head(cards)
+tail(cards)
+```
+
+Write deal function to deal a card and shuffle the deck
+
+```{r}
+hand <- NULL
+deal_to_hand <- function(hand, cards) {
+  if(hand %>% is.null()) {
+   hand <- data.frame(cards[1, ])
+  } else {
+    hand <- hand %>%
+            add_row(cards[1,])
+  }
+}
+deal_from_deck <- function(cards) {
+  cards[-1,]
+}
+
+shuffle <- function(deck) {
+  random <- sample(1:52, size = 52, replace = FALSE)
+  deck[random, ]
+}
+hand <- NULL
+
+shuffled_deck <- shuffle(deck)
+head(shuffled_deck)
+sum(shuffled_deck$value)
+sum(deck$value)
+hand <- deal_to_hand(hand, shuffled_deck)
+shuffled_deck <- deal_from_deck(shuffled_deck)
+hand <- deal_to_hand(hand, shuffled_deck)
+hand1 <- NULL
+hand2 <- NULL
+for (i in 1:5) {
+  hand1 <- deal_to_hand(hand1, shuffled_deck)
+  shuffled_deck <- deal_from_deck(shuffled_deck)
+  hand2 <- deal_to_hand(hand2, shuffled_deck)
+  shuffled_deck <- deal_from_deck(shuffled_deck)
+}
+shuffle_war_deck <- function(deck) {
+  for(i in 1:length(deck)) {
+    if(deck[i, "face"] == "ace") {
+      deck[i, "value"] = 14
+    }
+  }
+  random <- sample(1:52, size = 52, replace = FALSE)
+  deck[random, ]
+}
+war_deck <- shuffle_war_deck(deck)
+
+
 ```
 
