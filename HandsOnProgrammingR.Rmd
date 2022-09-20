@@ -168,6 +168,7 @@ tail(cards)
 Write deal function to deal a card and shuffle the deck
 
 ```{r}
+options(warn = -1)
 hand <- NULL
 deal_to_hand <- function(hand, cards) {
   if(hand %>% is.null()) {
@@ -213,6 +214,40 @@ shuffle_war_deck <- function(deck) {
 }
 war_deck <- shuffle_war_deck(deck)
 
+war_hand1 <- NULL
+war_hand2 <- NULL
+j = 0
+for(i in 1:26) {
+  war_hand1 <- deal_to_hand(war_hand1, war_deck)
+  war_deck <- deal_from_deck(war_deck)
+  war_hand2 <- deal_to_hand(war_hand2, war_deck)
+  war_deck <- deal_from_deck(war_deck)
+}
+card1 <- NULL
+card2 <- NULL
+while(sum(war_hand1$value) != 0 & sum(war_hand2$value) != 0) {
+  card1 <- deal_to_hand(card1, war_hand1)
+  war_hand1 <- deal_from_deck(war_hand1)
+  card2 <- deal_to_hand(card2, war_hand2)
+  war_hand2 <- deal_from_deck(war_hand2)
+  while(sum(card1$value) == sum(card2$value)) {
+    card1 <- deal_to_hand(card1, war_hand1)
+    war_hand1 <- deal_from_deck(war_hand1)
+    card2 <- deal_to_hand(card2, war_hand2)
+    war_hand2 <- deal_from_deck(war_hand2)
+  }
+  if(card1 > card2) {
+    war_hand1 <- rbind(war_hand1, card1, card2)
+    card1 <- NULL
+    card2 <- NULL
+  } else {
+    war_hand2 <- rbind(war_hand2, card1, card2)
+    card1 <- NULL
+    card2 <- NULL
+  }
+  j = j + 1
+}
+options(warn = 0)
 
 ```
 
