@@ -167,15 +167,14 @@ tail(cards)
 
 Write deal function to deal a card and shuffle the deck
 
-```{r}
+```{r, include = FALSE}
 options(warn = -1)
 hand <- NULL
 deal_to_hand <- function(hand, cards) {
   if(hand %>% is.null()) {
    hand <- data.frame(cards[1, ])
   } else {
-    hand <- hand %>%
-            add_row(cards[1,])
+    hand <- rbind(cards[1,], hand)
   }
 }
 deal_from_deck <- function(cards) {
@@ -225,28 +224,33 @@ for(i in 1:26) {
 }
 card1 <- NULL
 card2 <- NULL
-while(sum(war_hand1$value) != 0 & sum(war_hand2$value) != 0) {
-  card1 <- deal_to_hand(card1, war_hand1)
-  war_hand1 <- deal_from_deck(war_hand1)
-  card2 <- deal_to_hand(card2, war_hand2)
-  war_hand2 <- deal_from_deck(war_hand2)
-  while(sum(card1$value) == sum(card2$value)) {
-    card1 <- deal_to_hand(card1, war_hand1)
+if(!war_hand1[1] %>% is.null()) { #TODO change to while loop
+  if(!war_hand2[1] %>% is.null()){ #TODO change to while loop
+   card1 <- deal_to_hand(card1, war_hand1)
     war_hand1 <- deal_from_deck(war_hand1)
     card2 <- deal_to_hand(card2, war_hand2)
     war_hand2 <- deal_from_deck(war_hand2)
+    while(card1[1, 3] == card2[1, 3]) {
+      card1 <- deal_to_hand(card1, war_hand1)
+      war_hand1 <- deal_from_deck(war_hand1)
+      card2 <- deal_to_hand(card2, war_hand2)
+      war_hand2 <- deal_from_deck(war_hand2)
+    }
+    if(card1 > card2) {
+      war_hand1 <- rbind(war_hand1, card1, card2)
+      card1 <- NULL
+      card2 <- NULL
+    } else {
+      war_hand2 <- rbind(war_hand2, card1, card2)
+      card1 <- NULL
+      card2 <- NULL
+    }
+    j = j + 1
+    j
   }
-  if(card1 > card2) {
-    war_hand1 <- rbind(war_hand1, card1, card2)
-    card1 <- NULL
-    card2 <- NULL
-  } else {
-    war_hand2 <- rbind(war_hand2, card1, card2)
-    card1 <- NULL
-    card2 <- NULL
-  }
-  j = j + 1
 }
+
+
 options(warn = 0)
 
 ```
